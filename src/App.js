@@ -1,8 +1,11 @@
 import './App.css';
-import { useSelector, useDispatch } from 'react-redux'
+// for middleware, need to import connect
+import { useSelector, useDispatch, connect } from 'react-redux'
 import { clearData, fetchData, incrementId, decrementId, inputId } from './features/dataSlice'
+import { useEffect } from 'react';
 
-function App() {
+// pass props into app
+function App(props) {
   const dispatch = useDispatch()
   const data = useSelector((state) => state.data)
 
@@ -14,6 +17,10 @@ function App() {
     }
   }
 
+  // calls React's useEffect method to trigger API call on render
+  useEffect(() => {
+    dispatch(fetchData())
+  }, [props.objectId, dispatch])
 
   return (
     <div className="App">
@@ -34,4 +41,11 @@ function App() {
   );
 }
 
-export default App;
+// maps objectId to props in order to run useEffect code every time the
+//object changes. Must be outside of App() function.
+const mapStateToProps = (state) => ({
+  objectId: state.data.objectId
+})
+
+// export the Connect-equipped version of app
+export default connect(mapStateToProps)(App);
